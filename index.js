@@ -1,33 +1,74 @@
 const http = require('http');
+const fs = require('fs');
+const path = require('path');
 
 
 
 const server = http.createServer((req,res) =>{
-    // req = server so'rov.
-    // res = sever javobi
+  
+  // GEt section
+  if(req.method === 'GET'){
+    res.writeHead(200,{'Content-Type':'text/html'})
+
+
+    if(req.url === '/'){
+
+      fs.readFile(path.join(__dirname,'templates','index.html'),'utf-8',(err,data) =>{
+        if(err) throw err
+        res.end(data)
+      })
+      
+
+    }else if (req.url === '/about'){
+
+
+      fs.readFile(path.join(__dirname,'templates','about.html'),'utf-8',(err,data) =>{
+        if(err) throw err
+        res.end(data)
+      })
+
+
+
+    }else if(req.url === '/contact'){
+
+      fs.readFile(path.join(__dirname,'templates','contact.html'),'utf-8',(err,data) =>{
+        if(err) throw err
+        res.end(data)
+      })
+
+    }
+    
+
+
+
+  // POST section
+  }else if(req.method === 'POST'){
+    
+    const body = [];
+    res.writeHead(200,{'Content-Type':'text/html charset=utf-8'})
+    
+    req.on('data',data =>{
+      body.push(Buffer.from(data))
+    })
+
+    req.on('end',() =>{
+
+      const message = body.toString().split('=')[1]
+      // console.log(body.toString( ));
+      res.end(`Name successfully added : ${message}`)
+    })
+  }
+  
 
 
     console.log(req.url);
-    res.end(`
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <title>Node.js Server</title>
-      </head>
-      <body>
-        <h1 style="color: red; font-family: Arial;">Hello, world! This is your Node.js server .</h1>
-        <h2 style="color: red; font-family: Arial;">Hello, world! This is your Node.js server with a h2 tag .</h2>
-        
-      </body>
-    </html>
-  `);
-
+    
     
     
 
 
 
-})
+});
 
 server.listen(8000,'127.0.0.1',()=>{
     console.log('Server is listening on poart : 8000');
